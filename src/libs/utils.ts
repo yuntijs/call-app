@@ -9,13 +9,13 @@ export const loadJS = (url: string, cb: () => void) => {
   head.appendChild(js)
 }
 
-export const loadJSArr = (urls: string[], cb: () => void) => {
+export const loadJSArr = (urls: string[], cb?: () => void) => {
   let done = 0
   if (typeof urls === 'string') urls = [urls]
   const { length } = urls
   urls.map((url) =>
     loadJS(url, () => {
-      ++done >= length && cb()
+      ++done >= length && cb?.()
     })
   )
 }

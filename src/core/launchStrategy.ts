@@ -19,8 +19,12 @@ import { logInfo, showMask } from '../libs/utils'
 
 let tempIosPlatRegList: any = null
 // 获取方法
-export const getIosPlatRegList = (ctx: CallAppInstance) =>
-  tempIosPlatRegList || (tempIosPlatRegList = getDefaultIosPlatRegList(ctx))
+export const getIosPlatRegList = (ctx: CallAppInstance) => {
+  if (!tempIosPlatRegList) {
+    tempIosPlatRegList = getDefaultIosPlatRegList(ctx);
+  }
+  return tempIosPlatRegList;
+}
 
 // 扩展方法
 export const addIosPlatReg = (ctx: CallAppInstance, item: Record<string, any>) => {
@@ -35,12 +39,12 @@ export const addIosPlatReg = (ctx: CallAppInstance, item: Record<string, any>) =
 export const getDefaultIosPlatRegList = (ctx: CallAppInstance) => {
   const { options, urlScheme: schemeURL, universalLink } = ctx
   const {
-    universal = false,
     callFailed = () => {},
     callSuccess = () => {},
     callError = () => {},
     delay = 2500,
   } = options
+  const universal = !!options.universalLink;
 
   const handleCheck = (delay = 2500) =>
     checkOpen(
@@ -117,9 +121,8 @@ export const getDefaultIosPlatRegList = (ctx: CallAppInstance) => {
 }
 
 export const getDefaultAndroidPlatRegList = (ctx: CallAppInstance) => {
-  const { options, urlScheme: schemeURL, intentLink } = ctx
+  const { options, urlScheme: schemeURL } = ctx
   const {
-    intent = false,
     callFailed = () => {},
     callSuccess = () => {},
     callError = () => {},
@@ -138,15 +141,6 @@ export const getDefaultAndroidPlatRegList = (ctx: CallAppInstance) => {
     )
 
   return [
-    {
-      name: 'intent',
-      platReg: () => isOriginalChrome && intent,
-      handler: () => {
-        handleCheck(delay)
-        // app-links 无法处理 失败回调， 原因同 universal-link
-        intentLink && evokeByLocation(intentLink)
-      },
-    },
     {
       name: 'chrome',
       platReg: () => isOriginalChrome,
@@ -175,8 +169,12 @@ export const getDefaultAndroidPlatRegList = (ctx: CallAppInstance) => {
     },
   ]
 }
-//
+
 let tempAndroidPlatRegList: any = null
 // 获取方法
-export const getAndroidPlatRegList = (ctx: CallAppInstance) =>
-  tempAndroidPlatRegList || (tempAndroidPlatRegList = getDefaultAndroidPlatRegList(ctx))
+export const getAndroidPlatRegList = (ctx: CallAppInstance) => {
+  if (!tempAndroidPlatRegList) {
+    tempAndroidPlatRegList = getDefaultAndroidPlatRegList(ctx)
+  }
+  return tempAndroidPlatRegList;
+}

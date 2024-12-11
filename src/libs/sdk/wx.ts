@@ -1,32 +1,10 @@
 import { CallAppInstance } from '../../index'
-import { wxInfo, dependencies, zAppInfo } from '../config'
+import { wxInfo, dependencies } from '../config'
 import { evokeByLocation } from '../evoke'
-import { isAndroid } from '../platform'
 import { loadJSArr, logError, logInfo } from '../utils'
 
-export interface WXJSTICKET {
-  appId?: string
-  timestamp?: string
-  noncestr?: string
-  signature?: string
-  [key: string]: any
-}
-
 export const loadWXSDK = () => {
-  const _ = Object.create(null)
-  return new Promise<WXJSTICKET>((resolve) => {
-    window.__json_jsticket = (resp: { respCode: number; respData: WXJSTICKET }) => {
-      if (resp) {
-        _.WX_JSTICKET = (resp.respCode == 0 && resp.respData) || {}
-      } else {
-        logError('load wx-sdk error')
-      }
-    }
-
-    loadJSArr([dependencies.WX_JWEIXIN.link, dependencies.WX_JSTICKET.link], () => {
-      resolve(_.WX_JSTICKET)
-    })
-  })
+  return new Promise(resolve => loadJSArr([dependencies.WX_JWEIXIN.link], () => resolve({})));
 }
 
 // 调用微信 sdk api 回调
@@ -51,7 +29,7 @@ export const invokeInWX = (
   })
 }
 
-export const openAppInWX = (
+const _openAppInWX = (
   schemeURL: string,
   instance: CallAppInstance,
   app: Record<string, any>
@@ -84,46 +62,34 @@ export const openAppInWX = (
     })
 }
 
-export const openZZInWX = async (instance: CallAppInstance) => {
+export const openAppInWX = async (instance: CallAppInstance) => {
   const { options, urlScheme = '' } = instance
   const { callFailed = () => {}, onWechatReady = () => {} } = options
-  // if(isAndroid){
-  //   return evokeByLocation(downloadLink)
-  // }
   try {
-    const conf: WXJSTICKET = await loadWXSDK()
+    await loadWXSDK()
+    const conf = instance.options.wechatConfig;
     const wxconfig = {
-      debug: false,
-      appId: conf.appId,
-      timestamp: conf.timestamp,
-      nonceStr: conf.noncestr,
-      signature: conf.signature,
-      beta: true,
-      jsApiList: ['launchApplication', 'getInstallState'],
+      debug: conf?.debug,
+      appId: conf?.appId,
+      timestamp: conf?.timestamp,
+      nonceStr: conf?.nonceStr,
+      signature: conf?.signature,
+      // jsApiList: ['launchApplication', 'getInstallState'],
+      jsApiList: ['launchApplication'],
       openTagList: ['wx-open-launch-app'],
     }
-    window.wx && window.wx.config(wxconfig)
+    if (window.wx) {
+      window.wx.config(wxconfig)
+    }
     window.wx.ready(() => {
+      logInfo('WXSDK ready')
       onWechatReady(window.WeixinJSBridge)
       // 实例化APP对象
       let app = window.WeixinJSBridge
-
-      if (isAndroid) {
-        const packageName = zAppInfo.ANDROID_PACKAGE_NAME
-        const packageUrl = urlScheme
-        invokeInWX('getInstallState', { packageName, packageUrl }, app)
-          .then(() => {
-            openAppInWX(urlScheme, instance, app)
-          })
-          .catch(() => {
-            callFailed()
-          })
-      } else {
-        // ios
-        openAppInWX(urlScheme, instance, app)
-      }
+      _openAppInWX(urlScheme, instance, app)
     })
   } catch (e) {
+    logInfo('WXSDK error', e)
     callFailed()
   }
 }

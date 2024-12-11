@@ -27,7 +27,7 @@ module.exports = (api) => {
               }
         ),
       ],
-      ['@babel/typescript'],
+      '@babel/preset-typescript',
     ],
     plugins: [
       [

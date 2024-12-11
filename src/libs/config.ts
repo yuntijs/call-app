@@ -1,8 +1,8 @@
 import { getUrlParams, getCookie } from './utils'
+
 /**
  * 授权的公众号id
  * */
-
 const getWxPublicId = (): string | undefined => {
   if (typeof window === 'undefined') {
     return
@@ -16,24 +16,13 @@ const getWxPublicId = (): string | undefined => {
  * 第三方依赖, 外链js
  * */
 export const enum SDKNames {
-  Z_SDK = 'Z_SDK',
-  W_SDK = 'W_SDK',
-  WX_JSTICKET = 'WX_JSTICKET',
+  // 微信的 js sdk 地址
   WX_JWEIXIN= 'WX_JWEIXIN',
 }
 
 export const dependencies = {
-  [SDKNames.Z_SDK]: {
-    link: '',
-  },
-  [SDKNames.W_SDK]: {
-    link: '',
-  },
-  [SDKNames.WX_JSTICKET]: {
-    link: '',
-  },
   [SDKNames.WX_JWEIXIN]: {
-    link: ''
+    link: 'https://res.wx.qq.com/open/js/jweixin-1.6.0.js'
   }
 }
 

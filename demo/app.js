@@ -3,73 +3,11 @@ import CallApp from '../src'
 window.__callAppDev__ = true
 
 try {
-  // 第三方配置， 唤起支付宝
-  // initCustomPage()
   // 检测 m 端是否支持 vue/es6 // 后面考虑 升级脚手架支持vue/react
   // throw Error('')
   initVuePage()
 } catch (error) {
   console.error(error)
-  initMiniPage({})
-}
-
-function initMiniPage(opts) {
-  var app = document.querySelector('#app')
-  var btn_open = document.createElement('button')
-  btn_open.innerText = '唤起'
-  var btn_download = document.createElement('button')
-  btn_download.innerText = '下载'
-  //
-  var hooks = {
-    callStart: function () {
-      console.log('--- trigger --- hook:callStart ')
-    },
-    callFailed: function () {
-      console.log('--- trigger --- hook:callFailed ')
-    },
-    callSuccess: function () {
-      console.log('--- trigger --- hook:callSuccess ')
-    },
-    callDownload: function () {
-      console.log('--- trigger --- hook:callDownload ')
-    },
-    callError: function () {
-      console.log('--- trigger --- hook:callError ')
-    },
-  }
-
-  var callApp = (window.callApp = new CallApp(opts))
-  //
-  btn_open.onclick = function () {
-    console.log('window.CallApp', window.CallApp)
-    callApp.start({
-      path: opts.path || 'zhuanzhuan://jump/shortVideo/videoHome/jump', // 兼容app所有统跳地址
-      // path: 'zzhunter%3A%2F%2Fjump%2Fcore%2FmainPage%2Fjump',
-      universal: false,
-      channelId: opts.channelId || 'BM_GJ618XC',
-      // targetApp: opts.targetApp || 'zz',
-      wechatStyle: 1, // 1表示浮层右上角，2表示浮层按钮
-      customConfig: opts.customConfig,
-      // deeplinkId: getQuery('channelId')
-      callStart: hooks.callStart,
-      callSuccess: hooks.callSuccess,
-      callFailed: hooks.callFailed,
-      callDownload: hooks.callDownload,
-      callError: hooks.callError,
-    })
-  }
-
-  btn_download.onclick = function () {
-    callApp.download({
-      targetApp: 'zzHunter',
-    })
-  }
-
-  app.style.cssText = 'display: flex;flex-direction: column;margin-top: 100px'
-  btn_download.style.cssText = 'margin-top: 50px;'
-
-  app.appendChild(btn_open)
-  app.appendChild(btn_download)
 }
 
 function initVuePage() {
@@ -82,32 +20,28 @@ function initVuePage() {
           <div class="display-info">
             <h3 style="height: 10px;font-size: 14px;">参数配置项</h3>
             <div class="config-item">
-              <span>path:</span>
-              <input type="text" v-model="state.path"/>
+              <span>schemeUrl:</span>
+              <input type="text" v-model="state.schemeUrl"/>
             </div>
             <div class="config-item">
-              <span>channelId:</span>
-              <input type="text" v-model="state.channelId"/>
+              <span>universalLink:</span>
+              <input type="text" v-model="state.universalLink"/>
             </div>
             <div class="config-item">
-              <span>deeplinkId:</span>
-              <input type="text" v-model="state.deeplinkId"/>
+              <span>middleWareUrl:</span>
+              <input type="text" v-model="state.middleWareUrl"/>
             </div>
             <div class="config-item">
-              <span>目标APP:</span>
-              <select v-model="state.targetApp">
-                <option value="">请选择目标app</option>
-                <option value="zz">转转</option>
-                <option value="zlj">找靓机</option>
-                <option value="zzHunter">采货侠</option>
-              </select>
+              <span>downloadConfig:</span>
+              <textarea rows="12" v-model="state.downloadConfig"/>
             </div>
             <div class="config-item">
-              <span>是否支持universal-link:</span>
-              <select v-model="state.universal">
-                <option value="1">是</option>
-                <option value="0">否</option>
-              </select>
+              <span>landingPage:</span>
+              <input type="text" v-model="state.landingPage"/>
+            </div>
+            <div class="config-item">
+              <span>wechatConfig:</span>
+              <textarea rows="8" v-model="state.wechatConfig"/>
             </div>
           </div>
         </section>
@@ -156,15 +90,25 @@ function initVuePage() {
       })
       //
       var state = reactive({
-        targetApp: 'zlj', //
-        path: '',
-        channelId: 'BM_GJ618XC',
-        deeplinkId: 'BM_GJ618XC',
-        //
+        schemeUrl: 'banya://art.botnow.cn/activity_details?id=9a884657-1393-4d4c-820a-8aeb68f9efea',
+        universalLinkInput: 'https://art.botnow.cn/apple-app-site-association/activity_details?id=9a884657-1393-4d4c-820a-8aeb68f9efea',
+        middleWareUrl: 'https://banya.art/m/download',
+        downloadConfig: JSON.stringify({
+          "ios": "https://apps.apple.com/cn/app/%E4%BC%B4%E5%91%80/id6737547648",
+          "android": "https://cdn.botnow.cn/banya/packages/android/banya.0.8.6.apk",
+          "android_yyb": "https://a.app.qq.com/o/simple.jsp?pkgname=com.botnow.banya"
+        }, null, 2),
+        landingPage: '',
         urlScheme: '',
         downloadLink: '',
         universalLink: '',
-        universal: 0,
+        wechatConfig: JSON.stringify({
+          debug: true,
+          "appId": "wx2ec224cec46d662a",
+          "nonceStr": "rUjIqs0I3my41ayM",
+          "timestamp": 1733899081,
+          "signature": "effe4c834f44a38edf3e010bb52d2c2c5407f1a1"
+        }, null, 2),
       })
 
       watch(
@@ -172,23 +116,21 @@ function initVuePage() {
           return state
         },
         function (opts) {
-          //
-          let p =
-            opts.targetApp == 'zlj'
-              ? 'native_api?type=132&content=%7B%22extra_tab_index%22%3A%220%22%7D'
-              : opts.targetApp == 'zz'
-              ? 'jump/shortVideo/videoHome/jump'
-              : opts.targetApp == 'zzHunter'
-              ? 'jump/core/web/jump'
-              : ''
-
+          var downloadConfig = {}
+          var wechatConfig = {}
+          try {
+            downloadConfig = JSON.parse(opts.downloadConfig)
+            wechatConfig = JSON.parse(opts.wechatConfig)
+          } catch (error) {
+            console.error('parse downloadConfig failed', error)
+          }
           callApp = window.callApp = new CallApp({
-            path: 'zhuanzhuan://jump/shortVideo/videoHome/jump' || opts.path || p, // 兼容app所有统跳地址
-            channelId: opts.channelId,
-            targetApp: opts.targetApp,
-            wechatStyle: 1, // 1表示浮层右上角
-            deeplinkId: opts.deeplinkId,
-            universal: +opts.universal,
+            schemeUrl: opts.schemeUrl,
+            universalLink: opts.universalLinkInput,
+            middleWareUrl: opts.middleWareUrl,
+            downloadConfig: downloadConfig,
+            landingPage: opts.landingPage,
+            wechatConfig: wechatConfig,
             callStart,
             callSuccess,
             callFailed,
@@ -208,7 +150,6 @@ function initVuePage() {
         }
       )
 
-      //
       const openApp = function () {
         console.log(
           window.navigator.userAgent,
@@ -219,6 +160,7 @@ function initVuePage() {
         )
 
         console.log('trigger start')
+        console.log('state =>', JSON.stringify(state, null, 2))
         callApp.start()
         state.downloadLink = callApp.downloadLink || ''
         state.urlScheme = callApp.urlScheme || ''
@@ -242,13 +184,4 @@ function initVuePage() {
       }
     },
   }).mount('#app')
-}
-
-function initCustomPage() {
-  initMiniPage({
-    customConfig: {
-      schemeUrl: 'alipay://platformapi/startapp?appId=20000056',
-      landingPage: 'https://render.alipay.com/p/s/i',
-    },
-  })
 }

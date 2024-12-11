@@ -8,17 +8,6 @@ const ua: string = (window.navigator && window.navigator.userAgent) || ''
  * native-webview 相关
  *
  */
-
-export const is58App: boolean = /wuba/i.test(ua)
-
-export const isZZ: boolean = /58zhuanzhuan/i.test(ua)
-
-export const isZZHunter: boolean = /zzHunter/i.test(ua)
-
-export const isZZSeller: boolean = /zhuanzhuanSeller/i.test(ua)
-
-export const isZZSeeker: boolean = /zhaoliangji-v2/i.test(ua) //zhaoliangji-v2
-
 export const isWechat: boolean = /micromessenger\/([\d.]+)/i.test(ua)
 
 export const isWeibo: boolean = /(weibo).*weibo__([\d.]+)/i.test(ua)
