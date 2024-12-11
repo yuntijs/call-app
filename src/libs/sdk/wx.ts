@@ -1,5 +1,5 @@
-import { CallAppInstance } from '../../index'
-import { wxInfo, dependencies } from '../config'
+import { CallAppInstance, WechatConfig } from 'types';
+import { dependencies } from '../config'
 import { evokeByLocation } from '../evoke'
 import { loadJSArr, logError, logInfo } from '../utils'
 
@@ -32,11 +32,12 @@ export const invokeInWX = (
 const _openAppInWX = (
   schemeURL: string,
   instance: CallAppInstance,
-  app: Record<string, any>
+  app: Record<string, any>,
+  conf: WechatConfig,
 ) => {
   const { options, downloadLink = '', universalLink = '' } = instance
   const { callFailed = () => {}, callSuccess = () => {} } = options
-  const { appID } = wxInfo
+  const appID = conf.launchAppId;
   const parameter = schemeURL
   const extInfo = schemeURL
 
@@ -67,7 +68,10 @@ export const openAppInWX = async (instance: CallAppInstance) => {
   const { callFailed = () => {}, onWechatReady = () => {} } = options
   try {
     await loadWXSDK()
-    const conf = instance.options.wechatConfig;
+    const { wechatConfig } = instance.options;
+    const conf = typeof wechatConfig === 'function'
+      ? (await wechatConfig())
+      : wechatConfig;
     const wxconfig = {
       debug: conf?.debug,
       appId: conf?.appId,
@@ -86,7 +90,7 @@ export const openAppInWX = async (instance: CallAppInstance) => {
       onWechatReady(window.WeixinJSBridge)
       // 实例化APP对象
       let app = window.WeixinJSBridge
-      _openAppInWX(urlScheme, instance, app)
+      _openAppInWX(urlScheme, instance, app, conf)
     })
   } catch (e) {
     logInfo('WXSDK error', e)

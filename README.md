@@ -56,12 +56,13 @@ callApp.download()
   - **android_yyb** `String` 应用宝 下载链接
 - **landingPage** `String` 唤起失败落地页，一般是下载中间页，优先级高于 `downloadConfig`
 - **delay** `Number` 调起app失败后触发下载延迟, 默认 2500（毫秒）
-- **wechatConfig** `Object` 微信 js sdk 配置，用于在微信中通过 launchApplication 的方式唤起 app, 详见 https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html#1
+- **wechatConfig** `Object` | `Function` 微信 js sdk 配置(支持函数的方式返回)，用于在微信中通过 launchApplication 的方式唤起 app, 详见 https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Wechat_Open_Tag.html
   - **debug** `String` 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
   - **appId** `String` 必填，公众号的唯一标识
   - **timestamp** `String` 必填，生成签名的时间戳
   - **nonceStr** `String` 必填，生成签名的随机串
   - **signature** `String` 必填，签名
+  - **launchAppId** `String` 所需跳转的移动应用的 AppID
 - **callStart** `Function` 开始执行调起时的hook
 - **callSuccess** `Function` 执行调起成功时的hook
 - **callFailed** `Function` 执行调起失败时的hook
@@ -182,22 +183,9 @@ callApp.use(function PluginA(app, optsA) {
 | weibo      | 不支持        | 不支持                | 支持               | 不支持             | 支持               |
 | qq         | 支持，应用宝  | 支持                  | 支持               | 支持               | 支持               |
 
-### native sdk
-
-#### ios / android
-
-
-|                         | 转转 | 采货侠 | 找靓机 | 卖家版 | 58app | 微信 |
-| ----------------------- | ---- | ------ | ------ | ------ | ----- | ---- |
-| 目标app: 转转           | x    | ✅      | ✅      | ✅      | ✅     | ✅    |
-| 目标app: 采货侠         | ✅    | x      | x      | x      | x     | x    |
-| 目标app: 找靓机         | ✅    | x      | x      | x      | x     | x    |
-| 目标app: 卖家版(已下架) | ✅    | x      | x      | x      | x     | x    |
-
-
 ---
 
 
 ### 公开文章
-[唤起 App 在转转的实践](https://mp.weixin.qq.com/s?__biz=MzU0OTExNzYwNg==&mid=2247486327&idx=1&sn=a4ed8b1b012638a60bd4065a6e5ee309)
-[复杂场景下唤起App实践](https://mp.weixin.qq.com/s?__biz=MzU0OTExNzYwNg==&mid=2247492140&idx=1&sn=9857ecdf80285020dd90fd3d26fb717d)
+- [唤起 App 在转转的实践](https://mp.weixin.qq.com/s?__biz=MzU0OTExNzYwNg==&mid=2247486327&idx=1&sn=a4ed8b1b012638a60bd4065a6e5ee309)
+- [复杂场景下唤起App实践](https://mp.weixin.qq.com/s?__biz=MzU0OTExNzYwNg==&mid=2247492140&idx=1&sn=9857ecdf80285020dd90fd3d26fb717d)

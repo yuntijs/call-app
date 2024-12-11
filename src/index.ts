@@ -33,7 +33,7 @@ export default class CallApp {
 
   universalLink?: string
 
-  wechatConfig?: WechatConfig
+  wechatConfig?: WechatConfig | (() => Promise<WechatConfig>)
 
   version?: string
 

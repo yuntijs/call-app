@@ -12,11 +12,13 @@ export interface DownloadConfig {
 }
 
 export interface WechatConfig {
-  appId?: string
-  timestamp?: string
-  nonceStr?: string
-  signature?: string
+  appId: string
+  timestamp: string
+  nonceStr: string
+  signature: string
   debug?: boolean
+  // 所需跳转的移动应用的AppID
+  launchAppId: string
   [key: string]: any
 }
 
@@ -41,7 +43,7 @@ export interface CallAppOptions {
   // 唤起失败落地页，一般是下载页面，可选，与 downloadConfig 二选一，都不指定时使用 middleWareUrl
   landingPage?: string
   // 微信 js sdk 配置，用于在微信中通过 launchApplication 的方式唤起 app
-  wechatConfig?: WechatConfig
+  wechatConfig?: WechatConfig | (() => Promise<WechatConfig>)
   // 微信端初始化检测安装后的回调函数
   onWechatReady?: (...arg: any[]) => void
   // 失败 hook

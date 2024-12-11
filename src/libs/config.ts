@@ -48,8 +48,3 @@ export interface WXInfo {
   appID: string
   miniID: string
 }
-
-export const wxInfo: WXInfo = {
-  appID: '', // app在微信绑定的appid
-  miniID: '', // 小程序id
-}
