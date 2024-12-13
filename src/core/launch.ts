@@ -4,8 +4,8 @@
  * launch 处理中心， 根据不同运行时环境和目标app, 调用对应的 uri 和 evoke 方法
  */
 
+import { CallAppInstance } from 'types'
 import { isAndroid, isIos } from '../libs/platform'
-import { CallAppInstance } from '../index'
 import { logInfo } from '../libs/utils'
 import { getDefaultIosPlatRegList, getDefaultAndroidPlatRegList } from './launchStrategy'
 

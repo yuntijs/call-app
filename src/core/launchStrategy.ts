@@ -1,3 +1,4 @@
+import { CallAppInstance } from 'types'
 import {
   isQQ,
   isWeibo,
@@ -14,7 +15,6 @@ import {
   // isThan12Ios,
 } from '../libs/platform'
 import { evokeByTagA, evokeByIFrame, evokeByLocation, checkOpen } from '../libs/evoke'
-import { CallAppInstance } from '../index'
 import { logInfo, showMask } from '../libs/utils'
 
 let tempIosPlatRegList: any = null
@@ -63,8 +63,7 @@ export const getDefaultIosPlatRegList = (ctx: CallAppInstance) => {
       platReg: () => isWechat && isLow7WX,
       handler: (instance: CallAppInstance) => {
         console.log(instance)
-
-        logInfo('isIos - isWeibo || isWechat < 7.0.5', isIos && isWechat && isLow7WX)
+        logInfo('isIos - isWechat < 7.0.5', isIos && isWechat && isLow7WX)
         showMask()
         callFailed()
       },
@@ -121,7 +120,7 @@ export const getDefaultIosPlatRegList = (ctx: CallAppInstance) => {
 }
 
 export const getDefaultAndroidPlatRegList = (ctx: CallAppInstance) => {
-  const { options, urlScheme: schemeURL } = ctx
+  const { options, urlScheme: schemeURL, downloadLink } = ctx
   const {
     callFailed = () => {},
     callSuccess = () => {},
@@ -152,7 +151,20 @@ export const getDefaultAndroidPlatRegList = (ctx: CallAppInstance) => {
     },
     {
       name: 'wx',
-      platReg: () => isWechat || isBaidu || isWeibo || isQzone,
+      platReg: () => isWechat,
+      handler: () => {
+        const yyb = options.downloadConfig?.android_yyb;
+        if (yyb) {
+          evokeByLocation(yyb);
+        } else {
+          showMask()
+          callFailed()
+        }
+      }
+    },
+    {
+      name: 'browser',
+      platReg: () => isBaidu || isWeibo || isQzone,
       handler: () => {
         // 不支持 scheme, 显示遮罩 请在浏览器打开
         showMask()

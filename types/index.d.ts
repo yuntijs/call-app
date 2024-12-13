@@ -17,9 +17,8 @@ export interface WechatConfig {
   nonceStr: string
   signature: string
   debug?: boolean
-  // 所需跳转的移动应用的AppID
-  launchAppId: string
-  [key: string]: any
+  jsApiList?: string[]
+  openTagList?: string[]
 }
 
 export interface CallAppOptions {
@@ -46,6 +45,8 @@ export interface CallAppOptions {
   wechatConfig?: WechatConfig | (() => Promise<WechatConfig>)
   // 微信端初始化检测安装后的回调函数
   onWechatReady?: (...arg: any[]) => void
+  // 初始化 hook
+  onInit?: (ctx: CallAppInstance, platform: Record<string, any>) => void;
   // 失败 hook
   callFailed?: () => void
   // 成功 hook

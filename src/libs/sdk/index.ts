@@ -1,1 +1,1 @@
-export { openAppInWX } from './wx'
+export { prepareWXSdk } from './wx'

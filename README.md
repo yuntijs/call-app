@@ -1,6 +1,6 @@
 # 简介
 
-> 基于转转 call-app 改造，去除内置的转转系 app，支持在微信中通过 launchApplication 唤起 app
+> 基于转转 call-app 改造，去除内置的转转系 app，支持在微信中通过 wx-open-launch-app 标签唤起 app (只内置了微信 js sdk 的加载和初始化，wx-open-launch-app 标签需要自行实现)
 
 `call-app` 是一个通用的唤起 app 的 sdk, 支持唤起多个 app, 兼容主流浏览器、webview，并支持用户自定义唤起配置。
 
@@ -62,7 +62,9 @@ callApp.download()
   - **timestamp** `String` 必填，生成签名的时间戳
   - **nonceStr** `String` 必填，生成签名的随机串
   - **signature** `String` 必填，签名
-  - **launchAppId** `String` 所需跳转的移动应用的 AppID
+  - **jsApiList** `String[]` 非必填，需要使用的JS接口列表，默认 []
+  - **openTagList** `String[]` 非必填，需要使用的开放标签列表，默认 ['wx-open-launch-app']
+- **onInit** `Function(ctx, plaform)` 初始化完成时的hook
 - **callStart** `Function` 开始执行调起时的hook
 - **callSuccess** `Function` 执行调起成功时的hook
 - **callFailed** `Function` 执行调起失败时的hook

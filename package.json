@@ -1,6 +1,6 @@
 {
   "name": "@yuntijs/call-app",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "通用的唤起 app 的库",
   "scripts": {
     "ts-check": "tsc --noEmit",

@@ -5,7 +5,6 @@
  */
 import { generateDownloadUrl } from './core/download'
 import { launch } from './core/launch'
-import { sdkLaunch } from './core/sdkLaunch'
 import {
   isAndroid,
   isIos,
@@ -19,6 +18,8 @@ import {
 import { evokeByIFrame, evokeByLocation, evokeByTagA } from './libs/evoke'
 import { copy, logError, logInfo, showMask } from './libs/utils'
 import { Plugin, WechatConfig, CallAppOptions } from '../types';
+import { prepareWXSdk } from './libs/sdk'
+import * as platform from './libs/platform'
 
 const version = __VERSION__
 
@@ -39,6 +40,8 @@ export default class CallApp {
 
   installedPlugins?: any
 
+  _isInit = false;
+
   // Create an instance of CallApp
   constructor(options?: CallAppOptions) {
     options && this.init(options)
@@ -51,6 +54,13 @@ export default class CallApp {
     this.urlScheme = options.schemeUrl
     this.universalLink = options.universalLink
     this.wechatConfig = options.wechatConfig
+    if (!this._isInit) {
+      this._isInit = true;
+      if (isWechat && this.options.wechatConfig) {
+        prepareWXSdk(this);
+      }
+      this.options.onInit?.(this, platform);
+    }
   }
 
   /**
@@ -62,13 +72,7 @@ export default class CallApp {
     const { callStart } = this.options
     callStart && callStart(this)
 
-    if (isWechat && this.options.wechatConfig) {
-      // by native-app js-sdk launch
-      sdkLaunch(this)
-    } else {
-      // by deepLinks/appLinks launch
-      launch(this)
-    }
+    launch(this)
   }
 
   /**
